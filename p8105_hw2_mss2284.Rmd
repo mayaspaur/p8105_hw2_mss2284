@@ -6,7 +6,7 @@ output: github_document
 ---
 ```{r setup}
 library(tidyverse)
-
+library(dplyr)
 library(readxl)
 ```
 
@@ -14,18 +14,50 @@ library(readxl)
 
 ```{r problem 1 part 1}
 trash_wheel_data = 
-  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel")
+  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel") %>%
+  janitor::clean_names() %>%
+  drop_na(dumpster) %>%
+  mutate(
+     sports_balls = round(sports_balls),
+     sports_balls = as.integer(sports_balls)
+  )
   
-janitor::clean_names(trash_wheel_data)
-
-drop_na(trash_wheel_data, dumpster)
-
-round(trash_wheel_data, sports_balls)
-
-as.integer(trash_wheel_data, sports_balls)
-
-trash_wheel_data
 view(trash_wheel_data)
 
+
 ```
+
+
+```{r problem 1 part 2}
+precipitation_data_2017=
+  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", skip = 1, col_names = TRUE) %>%
+  janitor::clean_names() %>%
+  drop_na(total, month) %>%
+  mutate(
+  year = 2017
+)
+
+view(precipitation_data_2017)
+  
+precipitation_data_2018=
+  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation",  skip = 1, col_names = TRUE) %>%
+  janitor::clean_names() %>%
+  drop_na(total, month) %>%
+  mutate(
+  year = 2018
+)
+  
+view(precipitation_data_2018)
+
+precipitation_data = 
+  full_join(precipitation_data_2017, precipitation_data_2018, by = c("month", "total", "year")) %>%
+  mutate(
+    month = month.name[month]
+  )
+
+view(precipitation_data)
+```
+
+
+
 
