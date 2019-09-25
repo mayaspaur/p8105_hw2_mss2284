@@ -4,4 +4,28 @@ author: "Maya Spaur"
 date: "9/25/2019"
 output: github_document
 ---
+```{r setup}
+library(tidyverse)
+
+library(readxl)
+```
+
+##Problem 1
+
+```{r problem 1 part 1}
+trash_wheel_data = 
+  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel")
+  
+janitor::clean_names(trash_wheel_data)
+
+drop_na(trash_wheel_data, dumpster)
+
+round(trash_wheel_data, sports_balls)
+
+as.integer(trash_wheel_data, sports_balls)
+
+trash_wheel_data
+view(trash_wheel_data)
+
+```
 
