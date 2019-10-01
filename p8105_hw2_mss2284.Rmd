@@ -36,7 +36,6 @@ precipitation_data_2017=
   year = 2017
 )
 
-
   
 precipitation_data_2018=
   read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation",  skip = 1, col_names = TRUE) %>%
@@ -47,14 +46,13 @@ precipitation_data_2018=
 )
   
 
-
 precipitation_data = 
   full_join(precipitation_data_2017, precipitation_data_2018, by = c("month", "total", "year")) %>%
   mutate(
     month = month.name[month]
   )
 
-
+view(precipitation_data)
 ```
 
  
@@ -77,15 +75,12 @@ pols_month =
    month = month.name[month]
    )
 
+
 pols_month =
-  pivot_longer(
-    pols_month,
-    c(prez_gop, prez_dem),
-    names_to = "president",
-    names_prefix = "prez_",
-    values_to = c("party")
-    ) %>%
-  select(-day, -party)
+  mutate(pols_month,
+    president = recode(prez_dem, "0" = "gop", "1" = "dem")
+  ) %>%
+  select(-day, -prez_dem, -prez_gop)
 
 view(pols_month) 
   
@@ -123,13 +118,15 @@ unemployment =
     
 view(unemployment)
 ```
+#How to adjust the format of month?
 
 ```{r problem 2 part 4, joining}
 polsmonth_snp = 
   left_join(pols_month, snp, by = c("year", "month")) 
 
 polsmonth_snp_unemployment =
-  left_join(polsmonth_snp, unemployment, by = c("year", "month"))
+  left_join(polsmonth_snp, unemployment, by = c("year", "month")) %>%
+  select(-close, -unemployment_perc)
 
 view(polsmonth_snp_unemployment)
 ```
