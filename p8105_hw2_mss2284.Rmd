@@ -14,14 +14,16 @@ library(readxl)
 
 ```{r problem 1 part 1}
 trash_wheel_data = 
-  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "Mr. Trash Wheel") %>%
+  read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel") %>%
   janitor::clean_names() %>%
   drop_na(dumpster) %>%
   mutate(
      sports_balls = round(sports_balls),
      sports_balls = as.integer(sports_balls)
-  )
+  ) %>%
+  select(-x15)
 
+view(trash_wheel_data)
 ```
 
 
@@ -129,7 +131,7 @@ polsmonth_snp =
 polsmonth_snp_unemployment =
   left_join(polsmonth_snp, unemployment, by = c("year", "month"))
 
-
+view(polsmonth_snp_unemployment)
 ```
 
 #Problem 3
@@ -150,14 +152,31 @@ popular_baby_names =
     ethnicity = replace(ethnicity, ethnicity == "asian and paci" , "asian and pacific islander")
     )
 
+olivia_data = 
+  filter(popular_baby_names, childs_first_name == "olivia") %>%
+  select(-gender, -count, -childs_first_name) %>%
+  pivot_wider(
+  names_from = "year_of_birth",
+  values_from = "rank"
+)
 
-    
-    
+view(olivia_data)
 
+male_names = 
+  filter(popular_baby_names, gender == "male", rank=="1")%>%
+  select(-count, -gender, -rank) %>%
+  pivot_wider(
+    names_from = "year_of_birth",
+  values_from = "childs_first_name"
+  )
   
-distinct(popular_baby_names, .keep_all = FALSE)
-
-unique(pull(popular_baby_names, ethnicity))
-
-view(popular_baby_names)
+white_nonhisp_2016=
+  filter(popular_baby_names, gender == "male", ethnicity == "white non hispanic", year_of_birth == "2016") %>%
+  ggplot(aes(x = rank, y = count)) + geom_point()
+  
+white_nonhisp_2016
+      
+view(popular_baby_names)  
+    
 ```
+
