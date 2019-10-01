@@ -4,7 +4,7 @@ author: "Maya Spaur"
 date: "9/25/2019"
 output: github_document
 ---
-```{r setup}
+```{r setup, results='hide', warning=FALSE}
 library(tidyverse)
 library(dplyr)
 library(readxl)
@@ -21,9 +21,6 @@ trash_wheel_data =
      sports_balls = round(sports_balls),
      sports_balls = as.integer(sports_balls)
   )
-  
-view(trash_wheel_data)
-
 
 ```
 
@@ -37,7 +34,7 @@ precipitation_data_2017=
   year = 2017
 )
 
-view(precipitation_data_2017)
+
   
 precipitation_data_2018=
   read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation",  skip = 1, col_names = TRUE) %>%
@@ -47,7 +44,7 @@ precipitation_data_2018=
   year = 2018
 )
   
-view(precipitation_data_2018)
+
 
 precipitation_data = 
   full_join(precipitation_data_2017, precipitation_data_2018, by = c("month", "total", "year")) %>%
@@ -55,9 +52,112 @@ precipitation_data =
     month = month.name[month]
   )
 
-view(precipitation_data)
+
+```
+
+ 
+The number of observations in Mr. Trash Wheel are `r nrow(trash_wheel_data)`. Examples of key variables include month (spring and summer months), and weight_tons of trash. The median number of sports balls in a dumpster in 2017 was `r median(pull(filter(trash_wheel_data, year==2017), sports_balls))`. 
+
+The number of observations in the Precipitation Data 2017 - 2018 are `r nrow(precipitation_data)`. Key variables are month and total. Among available data, the total precipitation in 2018 was `r sum(pull(precipitation_data_2018, total))`.
+
+
+##Problem 2
+
+```{r problem 2 part 1, pols-month}
+pols_month =
+  read_csv("./fivethirtyeight_datasets/pols-month.csv") %>%
+  janitor::clean_names() %>%
+  separate(mon, into = c("year", "month", "day")) %>%
+   mutate(
+   year = as.integer(year),
+   month = as.integer(month),
+   day = as.integer(day),
+   month = month.name[month]
+   )
+
+pols_month =
+  pivot_longer(
+    pols_month,
+    c(prez_gop, prez_dem),
+    names_to = "president",
+    names_prefix = "prez_",
+    values_to = c("party")
+    ) %>%
+  select(-day, -party)
+
+view(pols_month) 
+  
 ```
 
 
+```{r problem 2 part 2, snp}
+snp =
+  read_csv("./fivethirtyeight_datasets/snp.csv") %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("month", "day", "year")) %>%
+   mutate(
+   year = as.integer(year),
+   month = as.integer(month),
+   day = as.integer(day),
+   month = month.name[month]
+   ) %>%
+  select(year, month, -day, close)
+
+view(snp)  
+
+  
+```
 
 
+```{r problem 2 part 3, unemployment}
+unemployment =
+  read_csv("./fivethirtyeight_datasets/unemployment.csv") %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    jan:dec,
+    names_to = "month",
+    values_to = "unemployment_perc"
+  )
+    
+view(unemployment)
+```
+
+```{r problem 2 part 4, joining}
+polsmonth_snp = 
+  left_join(pols_month, snp, by = c("year", "month")) 
+
+polsmonth_snp_unemployment =
+  left_join(polsmonth_snp, unemployment, by = c("year", "month"))
+
+
+```
+
+#Problem 3
+
+```{r problem 3}
+popular_baby_names =
+  read_csv("./Popular_Baby_Names.csv") %>%
+  janitor::clean_names() %>%
+  distinct() %>%
+  mutate(
+    gender = str_to_lower(gender),
+    ethnicity = str_to_lower(ethnicity),
+    childs_first_name = str_to_lower(childs_first_name)
+  ) %>%
+  mutate(
+    ethnicity = replace(ethnicity, ethnicity == "black non hisp" , "black non hispanic"),
+    ethnicity = replace(ethnicity, ethnicity == "white non hisp" , "white non hispanic"),
+    ethnicity = replace(ethnicity, ethnicity == "asian and paci" , "asian and pacific islander")
+    )
+
+
+    
+    
+
+  
+distinct(popular_baby_names, .keep_all = FALSE)
+
+unique(pull(popular_baby_names, ethnicity))
+
+view(popular_baby_names)
+```
