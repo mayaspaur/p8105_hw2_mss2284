@@ -4,7 +4,7 @@ author: "Maya Spaur"
 date: "9/25/2019"
 output: github_document
 ---
-```{r setup, results='hide', warning=FALSE}
+```{r}
 library(tidyverse)
 library(dplyr)
 library(readxl)
@@ -16,14 +16,14 @@ Trash Wheel Data:
 
 ```{r problem 1 part 1}
 trash_wheel_data = 
-  read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel") %>%
+  read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel", skip=1) %>%
   janitor::clean_names() %>%
   drop_na(dumpster) %>%
   mutate(
      sports_balls = round(sports_balls),
      sports_balls = as.integer(sports_balls)
   ) %>%
-  select(-x15)
+  select(-x15, -x16, -x17)
 
 ```
 
@@ -31,7 +31,7 @@ trash_wheel_data =
 
 ```{r problem 1 part 2}
 precipitation_data_2017=
-  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2017 Precipitation", skip = 1, col_names = TRUE) %>%
+  read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2017 Precipitation", skip = 1, col_names = TRUE) %>%
   janitor::clean_names() %>%
   drop_na(total, month) %>%
   mutate(
@@ -40,7 +40,7 @@ precipitation_data_2017=
 
   
 precipitation_data_2018=
-  read_excel("./HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = "2018 Precipitation",  skip = 1, col_names = TRUE) %>%
+  read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "2018 Precipitation",  skip = 1, col_names = TRUE) %>%
   janitor::clean_names() %>%
   drop_na(total, month) %>%
   mutate(
@@ -140,6 +140,9 @@ polsmonth_snp =
 
 polsmonth_snp_unemployment =
   left_join(polsmonth_snp, unemployment, by = c("year", "month"))
+
+
+view(polsmonth_snp_unemployment)
   
 ```
 
