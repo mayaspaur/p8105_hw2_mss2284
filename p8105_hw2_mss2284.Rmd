@@ -12,6 +12,8 @@ library(readxl)
 
 ##Problem 1
 
+Trash Wheel Data:
+
 ```{r problem 1 part 1}
 trash_wheel_data = 
   read_excel("./Trash-Wheel-Collection-Totals-8-6-19.xlsx", sheet = "Mr. Trash Wheel") %>%
@@ -23,9 +25,9 @@ trash_wheel_data =
   ) %>%
   select(-x15)
 
-view(trash_wheel_data)
 ```
 
+2017 and 2018 Precipitation Data:
 
 ```{r problem 1 part 2}
 precipitation_data_2017=
@@ -52,16 +54,17 @@ precipitation_data =
     month = month.name[month]
   )
 
-view(precipitation_data)
 ```
 
  
 The number of observations in Mr. Trash Wheel are `r nrow(trash_wheel_data)`. Examples of key variables include month (spring and summer months), and weight_tons of trash. The median number of sports balls in a dumpster in 2017 was `r median(pull(filter(trash_wheel_data, year==2017), sports_balls))`. 
 
-The number of observations in the Precipitation Data 2017 - 2018 are `r nrow(precipitation_data)`. Key variables are month and total. Among available data, the total precipitation in 2018 was `r sum(pull(precipitation_data_2018, total))`.
+The number of observations in the Precipitation Data 2017 - 2018 are `r nrow(precipitation_data)`. Key variables are month and total precipitation (total). Among available data, the total precipitation in 2018 was `r sum(pull(precipitation_data_2018, total))`.
 
 
 ##Problem 2
+
+Pols Month Data:
 
 ```{r problem 2 part 1, pols-month}
 pols_month =
@@ -81,11 +84,11 @@ pols_month =
     president = recode(prez_dem, "0" = "gop", "1" = "dem")
   ) %>%
   select(-day, -prez_dem, -prez_gop)
-
-view(pols_month) 
   
 ```
 
+
+Snp Data:
 
 ```{r problem 2 part 2, snp}
 snp =
@@ -99,12 +102,10 @@ snp =
    month = month.name[month]
    ) %>%
   select(year, month, -day, close)
-
-view(snp)  
-
   
 ```
 
+Unemployment Data:
 
 ```{r problem 2 part 3, unemployment}
 unemployment =
@@ -114,26 +115,47 @@ unemployment =
     jan:dec,
     names_to = "month",
     values_to = "unemployment_perc"
-  )
-    
-view(unemployment)
+  ) %>% 
+  mutate(month = recode(month, 
+    "jan" = "January", 
+    "feb" = "February",
+    "mar" = "March",
+    "apr" = "April",
+    "jun" = "June",
+    "jul" = "July",
+    "aug" = "August",
+    "sep" = "September",
+    "oct" = "October",
+    "nov" = "November",
+    "dec" = "December"
+   ))
+
 ```
-#How to adjust the format of month?
+
+Joining the datasets:
 
 ```{r problem 2 part 4, joining}
 polsmonth_snp = 
   left_join(pols_month, snp, by = c("year", "month")) 
 
 polsmonth_snp_unemployment =
-  left_join(polsmonth_snp, unemployment, by = c("year", "month")) %>%
-  select(-close, -unemployment_perc)
-
-view(polsmonth_snp_unemployment)
+  left_join(polsmonth_snp, unemployment, by = c("year", "month"))
+  
 ```
+
+The pols-month data has `r nrow(pols_month)` observations describing national Democratic or Republican politicians, with a range of years `r range(pull(pols_month, year))`. Key variables include the year and month of the count, and the number of Democratic or Republican presidents (president, created from prez_dem and prez_gop).  
+
+The snp data has `r nrow(snp)` observations describing Standard & Poor's stock market index, including the years `r range(pull(snp, year))`. Key variables include the year and month, and the closing S&P stock value (close) on that date.
+
+The unemployment data has `r nrow(unemployment)` observations describing monthly percentage of unemployment, with a range of years `r range(pull(unemployment, year))`. Key variables include the year and month, and percentage of unemployment (unemployment_perc) for the listed month and year.
+
+The resulting dataset merged the pols_month, snp, and unemployment datasets by year and month, and has `r nrow(polsmonth_snp_unemployment)` observations, with a range of years `r range(pull(polsmonth_snp_unemployment, year))`. Key variables are from the datasets described above, close, unemployment, and president, describing the date of the S&P value at closing, unemployment percentage, and party of the president, respectively.
 
 #Problem 3
 
-```{r problem 3}
+Loading and Tidying the Popular Baby Names Data:
+
+```{r problem 3 part 1}
 popular_baby_names =
   read_csv("./Popular_Baby_Names.csv") %>%
   janitor::clean_names() %>%
@@ -149,6 +171,12 @@ popular_baby_names =
     ethnicity = replace(ethnicity, ethnicity == "asian and paci" , "asian and pacific islander")
     )
 
+```
+
+Olivia Popularity:
+
+```{r problem 3 part 2}
+
 olivia_data = 
   filter(popular_baby_names, childs_first_name == "olivia") %>%
   select(-gender, -count, -childs_first_name) %>%
@@ -157,8 +185,13 @@ olivia_data =
   values_from = "rank"
 )
 
-view(olivia_data)
+olivia_data
 
+```
+
+Top 2016 Names for White Non Hispanic Males:
+
+```{r problem 3 part 3}
 male_names = 
   filter(popular_baby_names, gender == "male", rank=="1")%>%
   select(-count, -gender, -rank) %>%
@@ -172,8 +205,6 @@ white_nonhisp_2016=
   ggplot(aes(x = rank, y = count)) + geom_point()
   
 white_nonhisp_2016
-      
-view(popular_baby_names)  
     
 ```
 
