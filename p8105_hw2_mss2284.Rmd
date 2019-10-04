@@ -146,13 +146,13 @@ view(polsmonth_snp_unemployment)
   
 ```
 
-The pols-month data has `r nrow(pols_month)` observations describing national Democratic or Republican politicians, with a range of years `r range(pull(pols_month, year))`. Key variables include the year and month of the count, and the number of Democratic or Republican presidents (president, created from prez_dem and prez_gop).  
+The `pols-month` data has `r nrow(pols_month)` observations and 9 variables describing national Democratic or Republican politicians, with a range of years `r range(pull(pols_month, year))`. Key variables include the year and month of the count, and the number of Democratic or Republican presidents (president, created from prez_dem and prez_gop).  
+ 
+The `snp` data has `r nrow(snp)` observations and 3 variables describing Standard & Poor's stock market index, with a range of years `r range(pull(snp, year))`. Key variables include the year and month, and the closing S&P stock value (close) on that date.
 
-The snp data has `r nrow(snp)` observations describing Standard & Poor's stock market index, including the years `r range(pull(snp, year))`. Key variables include the year and month, and the closing S&P stock value (close) on that date.
+The `unemployment` data has `r nrow(unemployment)` observations and 3 variables describing monthly percentage of unemployment, with a range of years `r range(pull(unemployment, year))`. Key variables include the year and month, and percentage of unemployment (unemployment_perc) for the listed month and year.
 
-The unemployment data has `r nrow(unemployment)` observations describing monthly percentage of unemployment, with a range of years `r range(pull(unemployment, year))`. Key variables include the year and month, and percentage of unemployment (unemployment_perc) for the listed month and year.
-
-The resulting dataset merged the pols_month, snp, and unemployment datasets by year and month, and has `r nrow(polsmonth_snp_unemployment)` observations, with a range of years `r range(pull(polsmonth_snp_unemployment, year))`. Key variables are from the datasets described above, close, unemployment, and president, describing the date of the S&P value at closing, unemployment percentage, and party of the president, respectively.
+The resulting dataset, `polsmonth_snp_unemployment`, merged the pols_month, snp, and unemployment datasets by year and month. This dataset has `r nrow(polsmonth_snp_unemployment)` observations, 11 variables, and with a range of years `r range(pull(polsmonth_snp_unemployment, year))`. Key variables are from the datasets described above, including close, unemployment, and president, describing the date of the S&P value at closing, unemployment percentage, and party of the president, respectively.
 
 #Problem 3
 
@@ -192,7 +192,7 @@ olivia_data
 
 ```
 
-Top 2016 Names for White Non Hispanic Males:
+Most Popular Male Name Over Time
 
 ```{r problem 3 part 3}
 male_names = 
@@ -202,7 +202,14 @@ male_names =
     names_from = "year_of_birth",
   values_from = "childs_first_name"
   )
-  
+
+male_names
+```
+
+
+Top 2016 Names for White Non Hispanic Males:
+
+```{r problem 3 part 4}
 white_nonhisp_2016=
   filter(popular_baby_names, gender == "male", ethnicity == "white non hispanic", year_of_birth == "2016") %>%
   ggplot(aes(x = rank, y = count)) + geom_point()
